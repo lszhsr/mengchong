@@ -1,0 +1,43 @@
+name: Build APK
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install SDK packages
+        run: sdkmanager "build-tools;34.0.0" "platforms;android-34"
+
+      - name: Unpack sources
+        run: |
+          tar -xzf DeskPetApp.png
+          ls -l DeskPetApp
+
+      - name: Build APK
+        run: |
+          chmod +x DeskPetApp/build.sh
+          cd DeskPetApp && ./build.sh "$ANDROID_SDK_ROOT"
+
+      - name: Publish APK to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: MengChong APK
+          files: DeskPetApp/build/app-release.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
