@@ -1,0 +1,43 @@
+name: Build APK v3
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Show SDK
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          ls "$ANDROID_HOME/build-tools" || true
+          ls "$ANDROID_HOME/platforms" || true
+
+      - name: Unpack and build
+        run: |
+          tar -xzf DeskPetApp.png
+          chmod +x DeskPetApp/build.sh
+          cd DeskPetApp
+          sh ./build.sh "${ANDROID_HOME:-$ANDROID_SDK_ROOT}"
+          ls -l build
+
+      - name: Publish APK to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: MengChong APK
+          files: DeskPetApp/build/app-release.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
