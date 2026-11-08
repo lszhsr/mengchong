@@ -1,0 +1,59 @@
+name: Diag
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Collect diagnostics
+        run: |
+          set +e
+          {
+            echo "== env =="
+            echo "ANDROID_HOME=$ANDROID_HOME"
+            echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+            echo "pwd=$(pwd)"
+            echo "== files =="
+            ls -l DeskPetApp.png
+            echo "== file type =="
+            file DeskPetApp.png
+            echo "== first bytes =="
+            head -c 32 DeskPetApp.png | od -c | head -3
+            echo "== tar test =="
+            tar -tzf DeskPetApp.png | head -3
+            echo "tar_rc=$?"
+            echo "== unpack =="
+            tar -xzf DeskPetApp.png
+            echo "unpack_rc=$?"
+            echo "== sdk =="
+            ls "$ANDROID_HOME/build-tools" 2>&1 | head -5
+            ls "$ANDROID_HOME/platforms" 2>&1 | head -5
+            echo "== build =="
+            cd DeskPetApp || exit 0
+            chmod +x build.sh
+            sh ./build.sh "$ANDROID_HOME"
+            echo "build_rc=$?"
+            ls -l build 2>&1
+          } > ../diag.txt 2>&1 || true
+          cat ../diag.txt
+
+      - name: Commit diagnostics
+        run: |
+          git config user.name "ci-diag"
+          git config user.email "ci@example.com"
+          git add -A diag.txt || true
+          git commit -m "diag: $(date -u +%H%M%S)" || true
+          git push || true
