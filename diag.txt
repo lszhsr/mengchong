@@ -1,0 +1,28 @@
+== env ==
+ANDROID_HOME=/usr/local/lib/android/sdk
+SDK_ROOT=/usr/local/lib/android/sdk
+-rw-r--r-- 1 runner runner 13267 Nov  8 04:18 DeskPetApp.png
+DeskPetApp.png: gzip compressed data, from Unix, original size modulo 2^32 59392
+0000000 037 213  \b  \0  \0  \0  \0  \0  \0 003 355   } 371   { 023   G
+0000020 322   p   ~ 326   _ 321   Q 366
+DeskPetApp/
+DeskPetApp/build.sh
+DeskPetApp/README.md
+tar_rc=0
+34.0.0
+35.0.0
+35.0.1
+36.0.0
+36.1.0
+android-34
+android-34-ext10
+android-34-ext11
+android-34-ext12
+android-34-ext8
+unpack_rc=0
+[1/6] 编译资源
+[2/6] 链接清单与资源
+build/res.zip@values_strings.arsc.flat: error: resource string/app_name does not override an existing resource.
+build/res.zip@values_strings.arsc.flat: note: define an <add-resource> tag or use --auto-add-overlay.
+build/res.zip@values_strings.arsc.flat: error: failed to merge resource table.
+error: failed parsing overlays.
